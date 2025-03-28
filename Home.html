@@ -1,0 +1,451 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <title>知新语法写作助手</title>
+    <!-- 添加缓存控制 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+    <script src="Scripts/jquery-3.6.0.js" type="text/javascript"></script>
+    <script src="Scripts/MessageBanner.js" type="text/javascript"></script>
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js" type="text/javascript"></script>
+
+
+    <!-- 在Home.js前添加openai-service.js引用 -->
+    <!-- 先引入API密钥管理脚本 -->
+    <script type="text/javascript" src="secure-api-key.js"></script>
+    <script src="openai-service.js?v=20250328_2" type="text/javascript"></script>
+    <link href="Home.css?v=20250328_2" rel="stylesheet" type="text/css" />
+    <script src="Home.js?v=20250328_2" type="text/javascript"></script>
+
+
+    <!-- Office UI Fabric -->
+    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/11.0.0/css/fabric.min.css">
+    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.components.min.css">
+
+    <!-- 添加聊天栏样式 -->
+    <style>
+        .chat-section {
+            margin-top: 20px;
+            border-top: 1px solid #eaeaea;
+            padding-top: 15px;
+        }
+
+        .chat-controls {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+            .chat-controls select {
+                flex-grow: 1;
+                width: 100%;
+                padding: 5px;
+                margin-right: 10px;
+                border: 1px solid #c8c8c8;
+            }
+
+
+        .chat-input-container {
+            display: flex;
+            align-items: flex-start;
+        }
+
+
+        .save-prompt-btn {
+            margin-left: 10px;
+        }
+
+        .dialog-mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 90%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            z-index: 999;
+        }
+
+        #save-prompt-dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            border-radius: 2px;
+            padding: 20px;
+            z-index: 1000;
+            min-width: 320px;
+        }
+
+        .ms-Dialog-title {
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .ms-Dialog-content {
+            margin-bottom: 20px;
+        }
+
+        .ms-Dialog-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+        /* 调整 Prompt 编辑区样式 */
+        .prompt-area {
+            width: 90%;
+            min-height: 60px;
+            padding: 8px;
+            margin-bottom: 5px;
+            border: 1px solid #c8c8c8;
+            resize: vertical;
+            color: #333333; /* 确保文本颜色可见 */
+            background-color: #ffffff; /* 确保背景是白色 */
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .prompt-actions {
+            display: flex;
+            align-items: center;
+            margin-left: 2px;
+        }
+
+            .prompt-actions .ms-Button {
+                margin-left: 2px;
+                height: 32px;
+            }
+
+        /* 图标按钮样式补充 */
+        .ms-Button--icon {
+            min-width: 7px;
+            height: 20px;
+            padding: 0;
+        }
+
+        /* 下拉框样式调整 */
+        .chat-controls select {
+            height: 32px;
+        }
+
+        /* 按钮文本强制显示 */
+        .ms-Button-label {
+            display: inline-block !important;
+            color: #333333 !important;
+            margin: 0 4px;
+        }
+        /* 操作按钮组样式 */
+        .prompt-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            margin-bottom: 8px;
+        }
+
+            .prompt-actions .ms-Button {
+                flex: 1;
+                margin: 0 4px;
+                min-width: 0;
+            }
+
+                /* 第一个按钮左侧无边距 */
+                .prompt-actions .ms-Button:first-child {
+                    margin-left: 0;
+                }
+
+                /* 最后一个按钮右侧无边距 */
+                .prompt-actions .ms-Button:last-child {
+                    margin-right: 0;
+                }
+
+        .ms-Dialog-actions .ms-Button {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body class="ms-font-m ms-Fabric">
+    <div id="content-main">
+        <div class="padding">
+            <div class="ms-font-xxl ms-fontColor-themePrimary ms-fontWeight-semibold header">知新写作助手</div>
+
+
+            <div class="section">
+                <div class="ms-font-l ms-fontColor-themePrimary section-header">文本检查</div>
+                <button class="ms-Button ms-Button--primary full-width" id="check-text">
+                    <span class="ms-Button-icon"><i class="ms-Icon ms-Icon--CheckMark"></i></span>
+                    <span class="ms-Button-label">检查所选文本</span>
+                    <span class="ms-Button-description">分析语法、拼写和表达</span>
+                </button>
+            </div>
+
+            <div class="section">
+                <div class="ms-font-l ms-fontColor-themePrimary section-header">AI建议</div>
+                <button class="ms-Button full-width" id="improve-clarity">
+                    <span class="ms-Button-icon"><i class="ms-Icon ms-Icon--EditStyle"></i></span>
+                    <span class="ms-Button-label">AI润色</span>
+                </button>
+                <button class="ms-Button full-width" id="improve-conciseness">
+                    <span class="ms-Button-icon"><i class="ms-Icon ms-Icon--Scissors"></i></span>
+                    <span class="ms-Button-label">AI降重</span>
+                </button>
+                <button class="ms-Button full-width" id="improve-tone">
+                    <span class="ms-Button-icon"><i class="ms-Icon ms-Icon--Megaphone"></i></span>
+                    <span class="ms-Button-label">Ai去口语化和中式英语</span>
+                </button>
+
+
+            </div>
+
+            <div class="section">
+                <div class="ms-font-l ms-fontColor-themePrimary section-header">高级功能</div>
+                <button class="ms-Button full-width" id="plagiarism-check">
+                    <span class="ms-Button-icon"><i class="ms-Icon ms-Icon--Shield"></i></span>
+                    <span class="ms-Button-label">原创度检查</span>
+                </button>
+                <button class="ms-Button full-width" id="readability-score">
+                    <span class="ms-Button-icon"><i class="ms-Icon ms-Icon--ReadingMode"></i></span>
+                    <span class="ms-Button-label">可读性评分</span>
+                </button>
+                <!-- 翻译按钮 -->
+                <button class="ms-Button full-width" id="translate-text">
+                    <span class="ms-Button-icon"><i class="ms-Icon ms-Icon--Translate"></i></span>
+                    <span class="ms-Button-label">翻译成中文</span>
+                </button>
+            </div>
+
+            <!-- 新增聊天栏 -->
+            <div class="section chat-section">
+                <div class="ms-font-l ms-fontColor-themePrimary section-header">AI对话</div>
+
+                <!-- Prompt选择器 -->
+                <div class="chat-controls">
+                    <select id="prompt-selector" class="ms-Dropdown">
+                        <option value="default">默认问答</option>
+                        <option value="academic">学术论文润色</option>
+                        <option value="creative">创意写作建议</option>
+                        <option value="technical">技术文档优化</option>
+                    </select>
+
+                </div>
+                <!-- 操作按钮组 -->
+                <!-- 操作按钮组 -->
+                <div class="prompt-actions" style="display: flex; align-items: center;">
+                    <button id="save-prompt" class="ms-Button" title="保存模板" onclick="window.handleSavePromptClick()">
+                        <span class="ms-Button-icon"><i class="ms-Icon ms-Icon--Save"></i></span>
+                        <span class="ms-Button-label">保存</span>
+                    </button>
+                    <button id="edit-prompt" class="ms-Button" title="编辑模板" onclick="window.handleEditPromptClick()">
+                        <span class="ms-Button-icon"><i class="ms-Icon ms-Icon--Edit"></i></span>
+                        <span class="ms-Button-label">编辑</span>
+                    </button>
+                    <button id="delete-prompt" class="ms-Button" title="删除模板" onclick="window.handleDeletePromptClick()">
+                        <span class="ms-Button-icon"><i class="ms-Icon ms-Icon--Delete"></i></span>
+                        <span class="ms-Button-label">删除</span>
+                    </button>
+                    <!-- 在HTML底部添加这个脚本 -->
+                    <script>
+                        // 直接删除函数
+                        function deletePromptDirectly() {
+                            console.log("执行直接删除...");
+                            var selector = document.getElementById("prompt-selector");
+                            var selectedValue = selector.value;
+
+                            // 检查是否是预设模板（不允许删除）
+                            var defaultTemplates = ["default", "academic", "creative", "technical"];
+                            if (defaultTemplates.includes(selectedValue)) {
+                                if (typeof window.showNotification === 'function') {
+                                    window.showNotification("提示", "预设模板不能删除");
+                                } else {
+                                    console.log("提示: 预设模板不能删除");
+                                }
+                                return;
+                            }
+
+                            // 执行删除
+                            try {
+                                // 从下拉菜单中移除
+                                for (var i = 0; i < selector.options.length; i++) {
+                                    if (selector.options[i].value === selectedValue) {
+                                        selector.remove(i);
+                                        break;
+                                    }
+                                }
+
+                                // 从存储中删除
+                                var savedTemplates = localStorage.getItem('customPromptTemplates');
+                                if (savedTemplates) {
+                                    var customTemplates = JSON.parse(savedTemplates);
+                                    if (customTemplates[selectedValue]) {
+                                        delete customTemplates[selectedValue];
+                                        localStorage.setItem('customPromptTemplates', JSON.stringify(customTemplates));
+                                    }
+                                }
+
+                                // 选择默认模板
+                                selector.value = "default";
+
+                                // 更新内容
+                                var promptContentElem = document.getElementById("prompt-content");
+                                if (promptContentElem) {
+                                    promptContentElem.value = "请基于以下内容回答问题:\n\n{selection}\n\n";
+                                }
+
+                                // 显示成功信息
+                                if (typeof window.showNotification === 'function') {
+                                    window.showNotification("成功", "已删除模板: " + selectedValue);
+                                } else {
+                                    console.log("成功: 已删除模板: " + selectedValue);
+                                }
+                            } catch (e) {
+                                console.error("删除模板失败:", e);
+                                if (typeof window.showNotification === 'function') {
+                                    window.showNotification("错误", "删除模板失败");
+                                }
+                            }
+                        }
+                    </script>
+                </div>
+                <!-- Prompt编辑区 -->
+                <textarea id="prompt-content" class="prompt-area"
+                          placeholder="输入自定义Prompt，可以使用{selection}表示选中的文本"
+                          rows="3"></textarea>
+
+                <!-- 用户输入区 -->
+                <div class="chat-input-container">
+
+                    <button id="send-message" class="ms-Button ms-Button--primary">
+                        <span class="ms-Button-icon"><i class="ms-Icon ms-Icon--Send"></i></span>
+                        <span class="ms-Button-label">发送</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 结果区域 -->
+        <div id="results-panel" style="display: none;">
+            <div class="ms-font-l ms-fontColor-themePrimary section-header">分析结果</div>
+            <div id="results-content" class="results-container"></div>
+        </div>
+    </div>
+
+    <!-- 底部 -->
+    <!-- 修改现有页脚 -->
+    <div class="footer">
+        <div class="ms-Grid ms-bgColor-themePrimary">
+            <div class="ms-Grid-row">
+                <div class="ms-Grid-col ms-u-sm10 ms-u-md10 ms-u-lg10">
+                    <div class="ms-font-m ms-fontColor-white footer-text">知新写作助手 v1.0 关注知新小窝获取免费的授权码</div>
+                </div>
+                <!-- 替换原有的授权按钮 -->
+                <div class="ms-Grid-col ms-u-sm2 ms-u-md2 ms-u-lg2" style="text-align: right;">
+                    <button id="auth-button" class="ms-Button ms-Button--icon"
+                            style="background: transparent; border: none; padding: 2px 8px; margin-top: 2px; outline: none;">
+                        <span class="ms-Button-icon">
+                            <i class="ms-Icon ms-Icon--Permissions" style="color: white; font-size: 14px;"></i>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通知条 -->
+    <div class="ms-MessageBanner" id="notification-popup" style="display:none;">
+        <div class="ms-MessageBanner-content">
+            <div class="ms-MessageBanner-text">
+                <div class="ms-MessageBanner-clipper">
+                    <div class="ms-font-m-plus ms-fontWeight-semibold" id="notification-header"></div>
+                    <div class="ms-font-m ms-fontWeight-semilight" id="notification-body"></div>
+                </div>
+            </div>
+            <button class="ms-MessageBanner-expand" style="display:none"><i class="ms-Icon ms-Icon--ChevronDown"></i></button>
+            <div class="ms-MessageBanner-action"></div>
+        </div>
+        <button class="ms-MessageBanner-close"><i class="ms-Icon ms-Icon--Clear"></i></button>
+    </div>
+
+    <!-- 保存Prompt对话框 -->
+    <div id="save-prompt-dialog" class="ms-Dialog" style="display:none;">
+        <div class="ms-Dialog-title">保存Prompt</div>
+        <div class="ms-Dialog-content">
+            <div class="ms-TextField">
+                <label class="ms-Label">模板名称</label>
+                <input id="prompt-name" class="ms-TextField-field" type="text" placeholder="模板名称">
+            </div>
+        </div>
+        <div class="ms-Dialog-actions">
+            <button id="save-prompt-confirm" class="ms-Button ms-Button--primary">
+                <span class="ms-Button-label">保存</span>
+            </button>
+            <button id="save-prompt-cancel" class="ms-Button">
+                <span class="ms-Button-label">取消</span>
+            </button>
+        </div>
+    </div>
+    <!-- 编辑Prompt对话框 -->
+    <!-- 编辑对话框 -->
+    <!-- 如果HTML中没有编辑对话框，添加这段代码 -->
+    <div id="edit-prompt-dialog" class="ms-Dialog" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; z-index:1001; padding:20px; box-shadow:0 0 10px rgba(0,0,0,0.2); min-width:300px;">
+        <div class="ms-Dialog-title">编辑Prompt</div>
+        <div class="ms-Dialog-content">
+            <div class="ms-TextField">
+                <label class="ms-Label">模板名称</label>
+                <input id="edit-prompt-name" class="ms-TextField-field" type="text" placeholder="模板名称">
+            </div>
+            <div class="ms-TextField" style="margin-top:16px;">
+                <label class="ms-Label">模板内容</label>
+                <textarea id="edit-prompt-content" class="ms-TextField-field"
+                          placeholder="输入自定义Prompt，可以使用{selection}表示选中的文本"
+                          rows="5" style="width:100%; color:#333333;"></textarea>
+            </div>
+        </div>
+        <div class="ms-Dialog-actions">
+            <button id="edit-prompt-confirm" class="ms-Button ms-Button--primary">
+                <span class="ms-Button-label">保存更改</span>
+            </button>
+            <button id="edit-prompt-cancel" class="ms-Button">
+                <span class="ms-Button-label">取消</span>
+            </button>
+        </div>
+    </div>
+
+
+    <!-- 聊天功能脚本，与主脚本分离 -->
+    <script src="chat-integration.js?v=20250328_1" type="text/javascript"></script>
+
+    <!-- 授权验证面板 -->
+    <div id="auth-panel" class="ms-Dialog" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; z-index:1001; padding:20px; box-shadow:0 0 10px rgba(0,0,0,0.2); min-width:300px; max-width:90%;">
+        <div class="ms-Dialog-title">产品授权验证</div>
+        <div class="ms-Dialog-content">
+            <div id="auth-status-section" style="margin-bottom:16px; padding:10px; border-radius:3px;">
+                <!-- 授权状态将在JS中动态填充 -->
+            </div>
+            <div class="ms-TextField">
+                <label class="ms-Label">授权码</label>
+                <input id="auth-code-input" class="ms-TextField-field" type="text" placeholder="请输入授权码">
+            </div>
+            <div id="auth-error" class="ms-MessageBar ms-MessageBar--error" style="display:none; margin-top:12px;">
+                <div class="ms-MessageBar-content">
+                    <div class="ms-MessageBar-icon">
+                        <i class="ms-Icon ms-Icon--Error"></i>
+                    </div>
+                    <div class="ms-MessageBar-text" id="auth-error-text"></div>
+                </div>
+            </div>
+        </div>
+        <div class="ms-Dialog-actions">
+            <button id="verify-auth-btn" class="ms-Button ms-Button--primary">
+                <span class="ms-Button-label">验证授权</span>
+            </button>
+            <button id="close-auth-panel-btn" class="ms-Button">
+                <span class="ms-Button-label">关闭</span>
+            </button>
+        </div>
+    </div>
+    <script src="auth-module.js?v=20250328_1" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,373 @@
+﻿/* 特定于页面的样式 */
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+body {
+    margin: 0 0 40px; /* 底部 = 页脚高度 */
+}
+.footer {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 40px;
+    width: 100%;
+}
+
+.padding {
+    padding: 15px;
+}
+/* 基本样式 */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#content-main {
+    height: calc(100vh - 40px);
+    overflow-y: auto;
+    padding-bottom: 50px;
+}
+
+.padding {
+    padding: 15px;
+}
+
+.header {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.description {
+    margin-bottom: 20px;
+}
+
+.section {
+    margin-bottom: 20px;
+}
+
+.section-header {
+    margin-bottom: 10px;
+}
+
+.full-width {
+    width: 100%;
+    margin-bottom: 8px;
+    text-align: left;
+    padding-left: 15px;
+}
+/* 分析结果样式 */
+.results-container {
+    font-family: 'Segoe UI', sans-serif;
+    color: #333;
+}
+
+.section-header {
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.result-card {
+    background-color: #fff;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.card-header {
+    background-color: #f0f0f0;
+    padding: 12px 15px;
+    font-weight: 600;
+    font-size: 16px;
+    color: #0078d4;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.card-body {
+    padding: 15px;
+}
+
+/* 统计数据网格 */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+    text-align: center;
+}
+
+.stat-item {
+    padding: 10px;
+    background-color: #f8f8f8;
+    border-radius: 4px;
+}
+
+.stat-value {
+    font-size: 20px;
+    font-weight: 600;
+    color: #0078d4;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 13px;
+    color: #666;
+}
+
+/* 建议项样式 */
+.suggestion-item {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+    .suggestion-item:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+.quoted-text {
+    background-color: #f5f7fa;
+    border-left: 4px solid #0078d4;
+    padding: 10px 12px;
+    margin: 10px 0;
+    font-style: italic;
+    line-height: 1.5;
+}
+
+.suggestion-content {
+    margin: 10px 0;
+}
+
+.suggestion-label {
+    font-weight: 600;
+    color: #333;
+}
+
+.explanation {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 8px 0 15px 0;
+}
+
+.apply-button {
+    background-color: #0078d4;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+    .apply-button:hover {
+        background-color: #005a9e;
+    }
+
+/* 卡片布局样式 */
+.result-card {
+    background-color: #ffffff;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: box-shadow 0.3s;
+}
+
+    .result-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+.card-header {
+    background-color: #f0f2f5;
+    padding: 12px 16px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #0078d4;
+    border-bottom: 1px solid #e6e9ed;
+}
+
+.card-body {
+    padding: 16px;
+}
+
+/* 统计数据网格 */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+.stat-item {
+    padding: 12px;
+    text-align: center;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    transition: transform 0.2s;
+}
+
+    .stat-item:hover {
+        transform: translateY(-2px);
+        background-color: #f0f4f8;
+    }
+
+.stat-item-full {
+    grid-column: 1 / -1;
+    padding: 12px;
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 600;
+    color: #0078d4;
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 13px;
+    color: #555;
+}
+
+/* 建议项样式 */
+.suggestion-item {
+    position: relative;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+    .suggestion-item:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+.suggestion-type {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 8px;
+    margin-bottom: 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
+}
+
+.type-grammar {
+    background-color: #fff4e5;
+    color: #d9730d;
+}
+
+.type-spelling {
+    background-color: #ffece8;
+    color: #e03e2d;
+}
+
+.type-clarity {
+    background-color: #e6f4ff;
+    color: #1677ff;
+}
+
+.type-conciseness {
+    background-color: #e6ffec;
+    color: #389e0d;
+}
+
+.type-tone {
+    background-color: #f5e8ff;
+    color: #722ed1;
+}
+
+.quoted-text {
+    background-color: #f5f7fa;
+    border-left: 4px solid #0078d4;
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-style: italic;
+    line-height: 1.6;
+    position: relative;
+    color: #444;
+}
+
+    .quoted-text::before,
+    .quoted-text::after {
+        content: '"';
+        color: #999;
+        font-size: 18px;
+    }
+
+.suggestion-content {
+    margin: 12px 0;
+    line-height: 1.5;
+}
+
+.suggestion-label {
+    font-weight: 600;
+    color: #333;
+    margin-right: 4px;
+}
+
+.explanation {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 8px 0 15px 0;
+    padding: 8px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+}
+
+.apply-button {
+    background-color: #0078d4;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+    .apply-button:hover {
+        background-color: #006cbe;
+        transform: translateY(-1px);
+    }
+
+    .apply-button:active {
+        transform: translateY(1px);
+    }
+
+.button-icon {
+    display: flex;
+    align-items: center;
+}
+
+/* 无问题提示 */
+.no-issues {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    text-align: center;
+    color: #107C10;
+}
+
+    .no-issues i {
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+/* 结果面板样式  
+
